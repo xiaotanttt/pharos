@@ -1,3 +1,13 @@
+# 代理配置文件 - 每行一个代理地址
+# 格式: protocol://username:password@host:port
+# 示例:
 http://username:password@proxy1.example.com:8080
 http://username:password@proxy2.example.com:8080
-http://username:password@proxy3.example.com:8080
+socks5://username:password@proxy3.example.com:1080
+
+# 注意事项:
+# 1. 请将此文件复制为 proxies.txt 并填入真实代理
+# 2. 代理文件不会被上传到 GitHub（已在 .gitignore 中排除）
+# 3. 支持 http、https、socks4、socks5 协议
+# 4. 代理可以提高网络稳定性和匿名性
+# 5. 如果不使用代理，可以留空或删除此文件

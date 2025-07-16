@@ -6,6 +6,32 @@
 require('dotenv').config();
 const fs = require('fs');
 const { ProductionExecutor } = require('./production_executor');
+
+// 全局错误处理 - 防止程序意外退出
+process.on('uncaughtException', (error) => {
+    console.error(`\n💥 未捕获异常: ${error.message}`);
+    console.error(`Stack: ${error.stack}`);
+    console.error(`⚠️ 程序将在3秒后退出，等待自动重启...\n`);
+    setTimeout(() => process.exit(1), 3000);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error(`\n💥 未处理的Promise拒绝: ${reason}`);
+    console.error(`Promise: ${promise}`);
+    console.error(`⚠️ 程序将在3秒后退出，等待自动重启...\n`);
+    setTimeout(() => process.exit(1), 3000);
+});
+
+// 优雅关闭处理
+process.on('SIGINT', () => {
+    console.log(`\n📡 收到 SIGINT 信号，开始优雅关闭...`);
+    process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+    console.log(`\n📡 收到 SIGTERM 信号，开始优雅关闭...`);
+    process.exit(0);
+});
 const { 
     CURRENT_CONFIG, 
     getEnabledFeatures,

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Pharos 生产系统快速启动脚本
+# Pharos Production System 快速启动脚本
 
-echo "🚀 Pharos 生产自动化系统启动脚本"
+echo "🚀 Pharos Production System 启动脚本"
 echo "=================================="
 
 # 检查Node.js

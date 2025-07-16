@@ -1,0 +1,40 @@
+# 依赖文件
+node_modules/
+package-lock.json
+
+# 敏感配置文件
+pk.txt
+proxies.txt
+wallets.txt
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+*.tmp
+*.temp
+
+# 环境配置
+.env
+.env.local
+.env.*.local
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试文件
+test_*.js
+debug_*.js
+
+# 备份文件
+*_backup.js
+*_old.js
+*.bak

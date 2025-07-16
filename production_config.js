@@ -10,7 +10,7 @@
 const FEATURE_CONFIG = {
     // 基础功能
     faucet: {
-        enabled: false,
+        enabled: true,
         name: "领水龙头",
         description: "自动领取测试网代币",
         cycleEnabled: true
@@ -87,6 +87,22 @@ const FEATURE_CONFIG = {
             contractAddress: '0x7fb63bfd3ef701544bf805e88cb9d2efaa3c01a9',
             mintAmount: 1
         }
+    },
+    
+    // 流动性添加功能 (循环执行) - 现在包含智能交换功能
+    liquidityAdd: {
+        enabled: true,  // 默认启用，因为现在有智能交换功能
+        name: "添加流动性",
+        description: "向Uniswap V3添加流动性 (含智能WPHRS交换)",
+        cycleEnabled: true, // 循环功能
+        config: {
+            positionManager: '0xf8a1d4ff0f9b9af7ce58e1fc1833688f3bfd6115',
+            maxPoolsPerCycle: 5, // 每个周期最多添加几个流动性池 (随机选择5个以内)
+            slippageTolerance: 10, // 滑点容忍度 (%)
+            enableMultiPool: true, // 启用多池同时添加
+            poolDelayMs: 3000, // 池之间的延迟时间 (毫秒)
+            enableIntelligentSwap: true // 启用智能交换功能
+        }
     }
 };
 
@@ -102,10 +118,11 @@ const CONFIG_PRESETS = {
             enhancedSwap: true,
             wrapPHRS: false,      // PHRS包装设为可选
             domainMint: true,     // 域名注册加入循环
-            nftMint: true
+            nftMint: true,
+            liquidityAdd: true    // 添加流动性功能
         },
         loop: { enabled: true, waitMinutes: 30, maxCycles: 0 },
-        wallet: { processAll: false, maxWallets: 5 }
+        wallet: { processAll: true, maxWallets: 0 }
     },
     
     TRADING_ONLY: {
@@ -118,10 +135,11 @@ const CONFIG_PRESETS = {
             enhancedSwap: true,
             wrapPHRS: false,      // 移除PHRS包装
             domainMint: true,     // 加入域名注册
-            nftMint: false
+            nftMint: false,
+            liquidityAdd: true    // 加入流动性添加
         },
         loop: { enabled: true, waitMinutes: 15, maxCycles: 0 },
-        wallet: { processAll: false, maxWallets: 10 }
+        wallet: { processAll: true, maxWallets: 0 }
     },
     
     DOMAIN_ONLY: {
@@ -140,6 +158,22 @@ const CONFIG_PRESETS = {
         wallet: { processAll: true, maxWallets: 0 }
     },
     
+    NFT_ONLY: {
+        name: "NFT专用模式",
+        description: "仅NFT铸造，单次执行",
+        features: {
+            faucet: false,
+            checkin: false,
+            originalTransfer: false,
+            enhancedSwap: false,
+            wrapPHRS: false,
+            domainMint: false,
+            nftMint: true
+        },
+        loop: { enabled: false, waitMinutes: 0, maxCycles: 1 },
+        wallet: { processAll: true, maxWallets: 0 }
+    },
+    
     BASIC_ONLY: {
         name: "基础功能模式",
         description: "签到+转账+域名，轻量运行",
@@ -153,7 +187,7 @@ const CONFIG_PRESETS = {
             nftMint: false
         },
         loop: { enabled: true, waitMinutes: 60, maxCycles: 0 },
-        wallet: { processAll: false, maxWallets: 3 }
+        wallet: { processAll: true, maxWallets: 0 }
     },
     
     TEST_MODE: {
@@ -182,24 +216,93 @@ const CONFIG_PRESETS = {
             enhancedSwap: true,
             wrapPHRS: true,       // Swap测试时可能需要包装
             domainMint: false,
-            nftMint: false
+            nftMint: false,
+            liquidityAdd: false
         },
-        loop: { enabled: false, waitMinutes: 0, maxCycles: 1 },
-        wallet: { processAll: false, maxWallets: 2 }
+        loop: { enabled: false, waitMinutes: 0, maxCycles: 10 },
+        wallet: { processAll: true, maxWallets: 0 }
+    },
+    
+    LIQUIDITY_TEST: {
+        name: "流动性测试",
+        description: "测试Uniswap V3流动性添加功能",
+        features: {
+            faucet: false,
+            checkin: false,
+            originalTransfer: false,
+            enhancedSwap: false,
+            wrapPHRS: false,
+            domainMint: false,
+            nftMint: false,
+            liquidityAdd: true
+        },
+        loop: { enabled: false, waitMinutes: 0, maxCycles: 3 },
+        wallet: { processAll: false, maxWallets: 1 }
+    },
+    
+    LIQUIDITY_INTENSIVE: {
+        name: "流动性密集模式",
+        description: "高频流动性添加，产生大量交易记录",
+        features: {
+            faucet: false,
+            checkin: true,
+            originalTransfer: false,
+            enhancedSwap: false,
+            wrapPHRS: false,
+            domainMint: false,
+            nftMint: false,
+            liquidityAdd: true
+        },
+        loop: { enabled: true, waitMinutes: 10, maxCycles: 0 }, // 每10分钟执行一次
+        wallet: { processAll: true, maxWallets: 0 }
+    },
+    
+    TURBO_FULL: {
+        name: "TURBO全功能模式",
+        description: "高性能并发处理，所有功能，适合大量钱包",
+        features: {
+            faucet: true,
+            checkin: true,
+            originalTransfer: true,
+            enhancedSwap: true,
+            wrapPHRS: false,
+            domainMint: true,
+            nftMint: false, // TURBO模式暂时禁用NFT（避免并发冲突）
+            liquidityAdd: true
+        },
+        loop: { enabled: true, waitMinutes: 15, maxCycles: 0 },
+        wallet: { processAll: true, maxWallets: 0 }
+    },
+    
+    TURBO_SPEED: {
+        name: "TURBO极速模式", 
+        description: "极高并发，最快处理速度，适合100+钱包",
+        features: {
+            faucet: false,
+            checkin: true,
+            originalTransfer: true,
+            enhancedSwap: true,
+            wrapPHRS: false,
+            domainMint: false, // 极速模式减少功能
+            nftMint: false,
+            liquidityAdd: true
+        },
+        loop: { enabled: true, waitMinutes: 5, maxCycles: 0 }, // 更频繁
+        wallet: { processAll: true, maxWallets: 0 }
     }
 };
 
 // ===== 当前运行配置 =====
 let CURRENT_CONFIG = {
-    preset: 'TRADING_ONLY',
+    preset: 'FULL_AUTO',
     loop: {
         enabled: true,
         waitMinutes: 15,
         maxCycles: 0
     },
     wallet: {
-        processAll: false,
-        maxWallets: 10,
+        processAll: true,
+        maxWallets: 0,
         delayBetweenWallets: 2000,
         delayBetweenFeatures: 1000
     },
@@ -214,6 +317,28 @@ let CURRENT_CONFIG = {
     }
 };
 
+// 配置初始化函数
+function initializeConfig() {
+    // 只在首次加载时初始化，避免重复初始化
+    if (!global.configInitialized) {
+        if (CURRENT_CONFIG.preset && CONFIG_PRESETS[CURRENT_CONFIG.preset]) {
+            const preset = CONFIG_PRESETS[CURRENT_CONFIG.preset];
+            
+            // 应用功能配置
+            Object.keys(FEATURE_CONFIG).forEach(featureName => {
+                FEATURE_CONFIG[featureName].enabled = preset.features[featureName] || false;
+            });
+            
+            // 应用其他配置
+            CURRENT_CONFIG.loop = { ...CURRENT_CONFIG.loop, ...preset.loop };
+            CURRENT_CONFIG.wallet = { ...CURRENT_CONFIG.wallet, ...preset.wallet };
+            
+            console.log(`\x1b[32m[+] ✅ 配置初始化完成: ${preset.name}\x1b[0m`);
+        }
+        global.configInitialized = true;
+    }
+}
+
 // ===== 网络配置 =====
 const NETWORK_CONFIG = {
     name: 'Pharos Testnet',
@@ -226,6 +351,55 @@ const NETWORK_CONFIG = {
         WPHRS: { address: '0x76aaada469d23216be5f7c596fa25f282ff9b364', decimals: 18 },
     }
 };
+
+// ===== 配置优化工具 =====
+function createCustomConfig(options = {}) {
+    const defaultOptions = {
+        features: {},
+        loop: { enabled: true, waitMinutes: 15, maxCycles: 0 },
+        wallet: { processAll: true, maxWallets: 0 },
+        name: "自定义配置",
+        description: "用户自定义的配置模式"
+    };
+    
+    const config = { ...defaultOptions, ...options };
+    
+    // 应用功能设置
+    Object.keys(FEATURE_CONFIG).forEach(featureName => {
+        FEATURE_CONFIG[featureName].enabled = config.features[featureName] || false;
+    });
+    
+    // 应用其他配置
+    CURRENT_CONFIG.loop = { ...CURRENT_CONFIG.loop, ...config.loop };
+    CURRENT_CONFIG.wallet = { ...CURRENT_CONFIG.wallet, ...config.wallet };
+    CURRENT_CONFIG.preset = 'CUSTOM';
+    
+    console.log(`\x1b[32m[+] ✅ 已应用自定义配置: ${config.name}\x1b[0m`);
+    console.log(`\x1b[32m[✓] 📝 ${config.description}\x1b[0m`);
+    
+    return config;
+}
+
+function setWalletLimit(maxWallets = 0) {
+    CURRENT_CONFIG.wallet.maxWallets = maxWallets;
+    CURRENT_CONFIG.wallet.processAll = maxWallets === 0;
+    
+    console.log(`\x1b[32m[+] ✅ 钱包限制已设置为: ${maxWallets === 0 ? '无限制' : maxWallets + '个'}\x1b[0m`);
+}
+
+function enableAllFeatures() {
+    Object.keys(FEATURE_CONFIG).forEach(featureName => {
+        FEATURE_CONFIG[featureName].enabled = true;
+    });
+    console.log(`\x1b[32m[+] ✅ 已启用所有功能\x1b[0m`);
+}
+
+function disableAllFeatures() {
+    Object.keys(FEATURE_CONFIG).forEach(featureName => {
+        FEATURE_CONFIG[featureName].enabled = false;
+    });
+    console.log(`\x1b[32m[+] ✅ 已禁用所有功能\x1b[0m`);
+}
 
 // ===== 工具函数 =====
 function applyConfigPreset(presetName) {
@@ -242,6 +416,20 @@ function applyConfigPreset(presetName) {
     CURRENT_CONFIG.loop = { ...CURRENT_CONFIG.loop, ...preset.loop };
     CURRENT_CONFIG.wallet = { ...CURRENT_CONFIG.wallet, ...preset.wallet };
     CURRENT_CONFIG.preset = presetName;
+    
+    // 将配置写回文件以持久化
+    const fs = require('fs');
+    const path = require('path');
+    const configPath = path.join(__dirname, 'production_config.js');
+    let content = fs.readFileSync(configPath, 'utf8');
+    
+    // 更新 preset 设置
+    content = content.replace(
+        /preset: '[^']*'/,
+        `preset: '${presetName}'`
+    );
+    
+    fs.writeFileSync(configPath, content);
     
     console.log(`\x1b[32m[+] ✅ 已应用配置预设: ${preset.name}\x1b[0m`);
     console.log(`\x1b[32m[✓] 📝 ${preset.description}\x1b[0m`);
@@ -287,15 +475,23 @@ function printCurrentConfig() {
     console.log(`👛 钱包处理: ${CURRENT_CONFIG.wallet.processAll ? '所有钱包' : `前${CURRENT_CONFIG.wallet.maxWallets}个钱包`}`);
 }
 
+// 立即初始化配置
+initializeConfig();
+
 module.exports = {
     FEATURE_CONFIG,
     CONFIG_PRESETS,
     CURRENT_CONFIG,
     NETWORK_CONFIG,
     applyConfigPreset,
+    createCustomConfig,
+    setWalletLimit,
+    enableAllFeatures,
+    disableAllFeatures,
     getEnabledFeatures,
     getCyclableFeatures,
     getOnceOnlyFeatures,
     getFeatureConfig,
-    printCurrentConfig
+    printCurrentConfig,
+    initializeConfig
 };

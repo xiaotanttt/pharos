@@ -1,179 +1,147 @@
-# Pharos 生产自动化系统 v2.0.0 🚀
+# Pharos Production System
 
-完整的 Pharos 测试网自动化系统，整合所有功能模块，支持灵活配置和智能循环。
+一个功能完整的 Pharos 测试网自动化生产系统，支持多种功能的自动化执行。
 
-**作者**: 0xTAN  
-**推特**: https://X.com/cgyJ9WZV29saahQ
+## 🚀 功能特点
 
-## ✨ 功能特性
+### 核心功能
+- **多池流动性添加** - 智能添加 Uniswap V3 流动性，支持随机选择3-5个池
+- **智能代币交换** - 自动 PHRS 包装和代币交换，确保余额充足
+- **每日签到** - 自动执行每日签到任务
+- **领水功能** - 自动领取测试网代币
+- **域名注册** - 自动注册 .phrs 域名
+- **NFT 铸造** - 自动铸造测试 NFT
+- **原始转账** - 执行随机 PHRS 转账刷交易
+- **增强版 Swap** - 在多个合约中执行交换操作
 
-### 🔄 循环功能 (每轮执行)
-- **每日签到** - 自动完成每日签到任务
-- **原始随机转账** - 执行10次随机PHRS转账刷TX
-- **增强版Swap** - 智能多合约Swap交易 (主要Swap功能)
-- **PHRS包装** - 自动将PHRS包装为WPHRS
-- **领水龙头** - 自动领取测试网代币
+### 系统特点
+- **多钱包支持** - 支持批量处理多个钱包
+- **代理支持** - 支持使用代理池进行网络请求
+- **循环执行** - 支持持续循环运行
+- **智能重试** - 包含完善的错误处理和重试机制
+- **配置预设** - 提供多种预设配置模式
+- **实时监控** - 详细的日志输出和状态监控
 
-### 1️⃣ 单次功能 (执行一次)
-- **域名注册** - 自动注册.phrs域名
-- **NFT铸造** - 铸造测试NFT
+## 📦 安装
 
-## 🎯 配置预设
-
-系统提供6种预设配置，满足不同使用需求：
-
-| 预设名称 | 描述 | 适用场景 | 循环间隔 |
-|---------|------|----------|----------|
-| **FULL_AUTO** | 全功能自动化 | 长期运行，完整体验 | 30分钟 |
-| **TRADING_ONLY** | 交易专用模式 | 专注交易，使用增强版Swap | 15分钟 |
-| **DOMAIN_ONLY** | 域名专用模式 | 仅域名注册 | 单次运行 |
-| **BASIC_ONLY** | 基础功能模式 | 轻量运行，低资源消耗 | 60分钟 |
-| **TEST_MODE** | 测试模式 | 安全测试，验证功能 | 单次运行 |
-| **ENHANCED_SWAP_TEST** | 增强Swap测试 | 测试增强版Swap功能 | 单次运行 |
-
-## 🚀 快速开始
-
-### 1. 安装依赖
 ```bash
+# 克隆仓库
+git clone <repository-url>
 cd pharos_production_system
+
+# 安装依赖
 npm install
 ```
 
-### 2. 准备配置文件
+## ⚙️ 配置
 
-#### 创建私钥文件 `pk.txt`
-```
-0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-0x2234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
-```
-
-#### 创建代理文件 `proxies.txt` (可选)
-```
-http://username:password@proxy1:port
-http://username:password@proxy2:port
-```
-
-### 3. 配置系统
+### 1. 配置钱包
+复制并编辑钱包配置文件：
 ```bash
-node config_manager.js
+cp pk.txt.example pk.txt
+# 编辑 pk.txt，每行一个私钥
 ```
-选择适合的配置预设，系统会自动应用相应设置。
 
-### 4. 启动系统
+### 2. 配置代理（可选）
 ```bash
-node production_main.js
+cp proxies.txt.example proxies.txt
+# 编辑 proxies.txt，每行一个代理地址
 ```
 
-## 📊 系统架构
+### 3. 选择运行模式
+编辑 `production_config.js` 文件，修改预设模式：
 
-### 核心模块
-- **production_config.js** - 配置管理，功能开关
-- **production_executor.js** - 核心执行器，功能实现
-- **production_main.js** - 主入口，循环控制
-- **config_manager.js** - 配置管理器，预设切换
-
-### 功能分类
-```
-循环功能 (🔄)
-├── 基础功能
-│   ├── 每日签到
-│   ├── 领水龙头
-│   └── 原始转账
-├── 交易功能  
-│   ├── 原始Swap
-│   ├── 增强Swap
-│   └── PHRS包装
-└── 高级功能
-    └── (预留扩展)
-
-单次功能 (1️⃣)
-├── 域名注册
-├── NFT铸造
-└── (预留扩展)
-```
-
-## ⚙️ 配置说明
-
-### 功能开关
-每个功能都可以独立开启/关闭：
 ```javascript
-const FEATURE_CONFIG = {
-    checkin: { enabled: true, cycleEnabled: true },
-    originalTransfer: { enabled: true, cycleEnabled: true },
-    domainMint: { enabled: false, cycleEnabled: false },
+let CURRENT_CONFIG = {
+    preset: 'FULL_AUTO', // 可选: FULL_AUTO, TRADING_ONLY, LIQUIDITY_INTENSIVE等
     // ...
 };
 ```
 
-### 运行参数
-```javascript
-const CURRENT_CONFIG = {
-    preset: 'TRADING_ONLY',           // 当前预设
-    loop: {
-        enabled: true,                // 是否循环运行
-        waitMinutes: 15,             // 循环间隔(分钟)
-        maxCycles: 0                 // 最大循环次数(0=无限)
-    },
-    wallet: {
-        processAll: false,           // 是否处理所有钱包
-        maxWallets: 10,             // 最大处理钱包数
-        delayBetweenWallets: 2000,  // 钱包间延迟(毫秒)
-        delayBetweenFeatures: 1000  // 功能间延迟(毫秒)
-    }
-};
-```
+## 🎯 可用的配置预设
 
-## 📈 使用建议
+| 预设名称 | 描述 | 适用场景 |
+|---------|------|---------|
+| `FULL_AUTO` | 全功能自动化 | 长期运行，所有功能 |
+| `TRADING_ONLY` | 交易专用模式 | 专注交易功能 |
+| `LIQUIDITY_INTENSIVE` | 流动性密集模式 | 高频流动性添加 |
+| `DOMAIN_ONLY` | 域名专用模式 | 仅域名注册 |
+| `TURBO_FULL` | 高性能全功能 | 大量钱包并发 |
+| `TEST_MODE` | 测试模式 | 功能测试 |
 
-### 新手推荐流程
-1. **测试阶段**: 使用 `TEST_MODE` 验证系统功能
-2. **域名注册**: 使用 `DOMAIN_ONLY` 完成域名注册
-3. **日常运行**: 使用 `TRADING_ONLY` 进行日常交易
-4. **完整体验**: 使用 `FULL_AUTO` 体验所有功能
+## 🚀 运行
 
-### 资源配置建议
-- **轻量运行**: `BASIC_ONLY` - 适合低配置服务器
-- **高频交易**: `TRADING_ONLY` - 适合专注交易刷量
-- **完整功能**: `FULL_AUTO` - 适合高配置长期运行
-
-### 安全建议
-- 首次使用务必选择 `TEST_MODE` 测试
-- 建议使用代理池分散请求
-- 定期检查钱包余额，确保有足够gas费
-- 监控系统日志，及时发现异常
-
-## 🔧 高级用法
-
-### 自定义配置
-可以直接修改 `production_config.js` 中的功能开关：
-```javascript
-// 启用特定功能组合
-FEATURE_CONFIG.checkin.enabled = true;
-FEATURE_CONFIG.originalSwap.enabled = true;
-FEATURE_CONFIG.domainMint.enabled = false;
-```
-
-### 命令行参数
+### 直接运行
 ```bash
-node production_main.js --help    # 显示帮助信息
+node production_main.js
 ```
 
-### 编程接口
-```javascript
-const { ProductionExecutor } = require('./production_executor');
-const executor = new ProductionExecutor();
-
-// 处理单个钱包
-const result = await executor.processWallet(privateKey, proxy);
+### 使用启动脚本
+```bash
+chmod +x start.sh
+./start.sh
 ```
 
-## 📊 监控与统计
+### 自动重启模式
+```bash
+node auto_restart.js
+```
 
-系统提供详细的执行统计：
-- 每轮执行统计
-- 功能成功率统计  
-- 钱包处理状态
-- 单次功能完成状态
+## 📊 多池流动性系统
+
+### 智能池子选择
+- 每次随机选择 3-5 个可用的流动性池
+- 支持 9 个不同的交易对和费率组合
+- 智能余额分配，确保多个池子都能获得资源
+
+### 支持的交易对
+- **USDC/WPHRS** - 3个不同费率的池子
+- **USDT/WPHRS** - 3个不同费率的池子  
+- **USDC/USDT** - 3个不同费率的池子
+
+### 智能交换系统
+- **PHRS 包装** - 优先使用原生 PHRS 包装成 WPHRS
+- **代币交换** - 在包装失败时自动执行代币交换
+- **余额优化** - 智能计算最优交换数量
+
+## 🔧 配置管理
+
+### 使用配置助手
+```bash
+node config_helper.js
+```
+
+### 使用配置管理器
+```bash
+node config_manager.js
+```
+
+## 📝 日志说明
+
+系统会输出详细的日志信息：
+- `[✓]` - 成功操作
+- `[✗]` - 失败操作  
+- `[!]` - 警告信息
+- `[🔄]` - 循环状态
+- `[👛]` - 钱包处理状态
+
+## 🛠️ 文件结构
+
+```
+pharos_production_system/
+├── production_main.js          # 主程序入口
+├── production_config.js        # 配置文件
+├── production_executor.js      # 功能执行器
+├── liquidity_module.js        # 流动性模块
+├── config_helper.js           # 配置助手
+├── config_manager.js          # 配置管理器
+├── auto_restart.js            # 自动重启脚本
+├── start.sh                   # 启动脚本
+├── package.json               # 项目依赖
+├── pk.txt.example             # 钱包配置示例
+├── proxies.txt.example        # 代理配置示例
+└── README.md                  # 项目说明
+```
 
 ## 🛠️ 故障排除
 
