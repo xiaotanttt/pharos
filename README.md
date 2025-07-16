@@ -1,6 +1,9 @@
 # Pharos Production System
 
 一个功能完整的 Pharos 测试网自动化生产系统，支持多种功能的自动化执行。
+此脚本开源感谢此条傻狗 微信号：Z X M ®.
+<img width="305" height="116" alt="16f8ebafc29e03bef0d96264729b49a" src="https://github.com/user-attachments/assets/1b3706c7-5326-4574-ba7b-538f4301acb8" />
+
 
 ## 🚀 功能特点
 
