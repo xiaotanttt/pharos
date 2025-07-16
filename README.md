@@ -38,13 +38,13 @@ npm install
 ### 1. 配置钱包
 复制并编辑钱包配置文件：
 ```bash
-cp pk.txt.example pk.txt
+nano pk.txt
 # 编辑 pk.txt，每行一个私钥
 ```
 
 ### 2. 配置代理（可选）
 ```bash
-cp proxies.txt.example proxies.txt
+nano proxies.txt
 # 编辑 proxies.txt，每行一个代理地址
 ```
 
