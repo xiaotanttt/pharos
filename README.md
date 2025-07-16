@@ -4,7 +4,7 @@
 
 此脚本开源感谢此条傻狗 微信号：Z X M ®.
 <img width="305" height="116" alt="16f8ebafc29e03bef0d96264729b49a" src="https://github.com/user-attachments/assets/1b3706c7-5326-4574-ba7b-538f4301acb8" />
-
+每个用运行此脚本的兄弟 都可以免费操这条傻狗的妈100遍
 
 ## 🚀 功能特点
 
