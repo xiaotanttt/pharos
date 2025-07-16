@@ -26,7 +26,7 @@
 
 ```bash
 # 克隆仓库
-git clone <repository-url>
+git clone https://github.com/xiaotanttt/pharos
 cd pharos_production_system
 
 # 安装依赖
